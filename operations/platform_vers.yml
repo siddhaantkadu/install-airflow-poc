@@ -1,0 +1,39 @@
+---
+
+# users
+
+func_user: "{{ APP_FUNC_USER }}"
+func_group: "{{ APP_FUNC_GROUP }}"
+func_user_home: "/home/{{ func_user }}"
+
+# Middleware
+
+dependency_packages: ["wget", "readline-devel", "zlib-devel", "bzip2-devel", "openssl-devel", "openldap-devel", "libicu-devel", "sqlite-devel"]
+platform_path: "/apps/opt/application"
+
+# Postgres Vars
+
+postgres_latest_version: "{{ POSTGRES_LATEST_VERSION }}"
+postgres_path: "{{ platform_path }}/postgres"
+postgres_home: "{{ postgres_path }}/postgresql-{{ postgres_latest_version }}"
+
+
+# Python Vars
+
+python_latest_version: "{{ PYTHON_LATEST_VERSION }}"
+python_directory: "{{ platform_path }}/Python"
+python_home: "{{ python_directory }}/Python-{{ python_latest_version }}"
+python_bin: "/apps/opt/application/Python/Python-3.12.6/bin"
+
+
+# Airflow Vars
+
+airflow_latest_version: "{{ AIRFLOW_LATEST_VERSION }}"
+airflow_py_version: "{{ AIRFLOW_PY_VERSION }}"
+airflow_plt_path: "{{ platform_path }}/apache-airflow"
+airflow_home: "{{ airflow_plt_path }}/airflow"
+airflow_venv_path: "{{ airflow_plt_path }}/venv-airflow"
+airflow_db_user: "{{ AIRFLOW_DB_USER }}"
+airflow_db_passwd: "{{ AIRFLOW_DB_PASSWD }}"
+db_hostname: "{{ DATABASE_HOSTNAME }}"
+airflow_db: "{{ AIRFLOW_DATABASE_NAME }}"

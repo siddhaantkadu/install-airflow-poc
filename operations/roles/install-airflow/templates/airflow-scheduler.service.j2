@@ -1,0 +1,16 @@
+[Unit]
+Description=Apache Airflow Scheduler
+After=network.target
+
+[Service]
+Environment="AIRFLOW_HOME={{ airflow_home }}"
+User={{ func_user }}
+Group={{ func_group }}
+PIDFile={{ airflow_home }}/scheduler/airflow-scheduler.pid
+ExecStartPre=/bin/bash -c "source {{ airflow_venv_path }}/bin/activate"
+ExecStart={{ airflow_venv_path }}/bin/airflow scheduler --pid {{ airflow_home }}/scheduler/airflow-scheduler.pid --daemon --log-file {{ airflow_home }}/scheduler/scheduler.log
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

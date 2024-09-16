@@ -1,0 +1,14 @@
+---
+- name: Restart Airflow Webserver Service 
+  systemd: name=airflow-webserver enabled=true state=restarted  
+  register: webs_restart_status
+
+- name: Restart Airflow Scheduler service
+  systemd: name=airflow-scheduler enabled=true state=restarted
+  register: scheduler_restart_status
+
+- name: Validate Airflow Webserver Restart Status  
+  debug: var=webs_restart_status.status.ActiveState
+
+- name: Validate Airflow Scheduler Restart Status  
+  debug: var=scheduler_restart_status.status.ActiveState

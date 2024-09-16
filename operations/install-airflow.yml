@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: True
+  become_user: root 
+  become_method: sudo
+  gather_facts: True 
+
+  vars_files: 
+    - platform_vers.yml 
+
+  roles: 
+    - { role: install-airflow }
+  
+  

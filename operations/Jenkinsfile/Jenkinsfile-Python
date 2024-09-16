@@ -1,0 +1,40 @@
+pipeline { 
+    agent {
+        label "MAVEN"
+    }
+    options { 
+        timeout(time: 3, unit: 'HOURS')
+        timestamps()
+    }
+    environment { 
+        GIT_REPO = 'https://siddhaantkadu-admin@bitbucket.org/siddhaantkadu/beekeeper-platform-engg.git'
+        GIT_BRANCH = 'main'
+        GIT_CRED = 'bitbucket-jenkins-purple-cube'
+    }
+    stages {
+        stage('Clean Workspace') { 
+            steps { 
+                cleanWs()
+            }
+        }
+        stage('SCM Checkout') { 
+            steps { 
+                git credentialsId: "${env.GIT_CRED}",
+                    url: "${env.GIT_REPO}",
+                    branch: "${env.GIT_BRANCH}"
+            }
+        }
+        stage('Invoke Ansible Playbook') { 
+            steps {
+                ansiblePlaybook (
+                    playbook: 'operations/install-python.yml',
+                    inventory: "${params.HOST_LIST},",
+                    extras: "-e PYTHON_LATEST_VERSION=${params.PYTHON_LATEST_VERSION} \
+                             -e APP_FUNC_USER=${params.APP_FUNC_USER} \
+                             -e APP_FUNC_GROUP=${params.APP_FUNC_GROUP}"
+                )
+            }
+        }
+    }
+}
+    

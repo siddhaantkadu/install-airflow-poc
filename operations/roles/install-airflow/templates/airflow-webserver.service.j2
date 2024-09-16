@@ -1,0 +1,17 @@
+[Unit]
+Description=Apache Airflow Webserver
+After=network.target
+
+[Service]
+Environment="AIRFLOW_HOME={{ airflow_home }}"
+PIDFile={{ airflow_home }}/airflow-webserver.pid
+User={{ func_user }}
+Group={{ func_group }}
+ExecStartPre=/bin/bash -c "source {{ airflow_venv_path }}/bin/activate"
+ExecStart={{ airflow_venv_path }}/bin/airflow webserver -p 9091 --pid {{ airflow_home }}/airflow-webserver.pid --daemon --log-file {{ airflow_home }}/logs/airflow-webserver.log
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+

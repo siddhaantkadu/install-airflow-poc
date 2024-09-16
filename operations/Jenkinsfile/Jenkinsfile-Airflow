@@ -1,0 +1,45 @@
+pipeline { 
+    agent {
+        label "MAVEN"
+    }
+    options { 
+        timeout(time: 3, unit: 'HOURS')
+        timestamps()
+    }
+    environment { 
+        GIT_REPO = 'https://siddhaantkadu-admin@bitbucket.org/siddhaantkadu/beekeeper-platform-engg.git'
+        GIT_BRANCH = 'main'
+        GIT_CRED = 'bitbucket-jenkins-purple-cube'
+    }
+    stages {
+        stage('Clean Workspace') { 
+            steps { 
+                cleanWs()
+            }
+        }
+        stage('SCM Checkout') { 
+            steps { 
+                git credentialsId: "${env.GIT_CRED}",
+                    url: "${env.GIT_REPO}",
+                    branch: "${env.GIT_BRANCH}"
+            }
+        }
+        stage('Invoke Ansible Playbook') { 
+            steps {
+                ansiblePlaybook (
+                    playbook: 'operations/install-airflow.yml',
+                    inventory: "${params.HOST_LIST},",
+                    extras: "-e AIRFLOW_LATEST_VERSION=${params.AIRFLOW_LATEST_VERSION} \
+                             -e AIRFLOW_PY_VERSION=${params.AIRFLOW_PY_VERSION} \
+                             -e APP_FUNC_USER=${params.APP_FUNC_USER} \
+                             -e APP_FUNC_GROUP=${params.APP_FUNC_GROUP} \
+                             -e AIRFLOW_DB_USER=${params.AIRFLOW_DB_USER} \
+                             -e AIRFLOW_DB_PASSWD=${params.AIRFLOW_DB_PASSWD} \
+                             -e DATABASE_HOSTNAME=${params.DATABASE_HOSTNAME} \
+                             -e AIRFLOW_DATABASE_NAME=${params.AIRFLOW_DATABASE_NAME}" 
+                )
+            }
+        }
+    }
+}
+    

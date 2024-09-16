@@ -1,0 +1,43 @@
+pipeline { 
+    agent {
+        label "MAVEN"
+    }
+    options { 
+        timeout(time: 3, unit: 'HOURS')
+        timestamps()
+    }
+    environment { 
+        GIT_REPO = 'https://siddhaantkadu-admin@bitbucket.org/siddhaantkadu/beekeeper-platform-engg.git'
+        GIT_BRANCH = 'main'
+        GIT_CRED = 'bitbucket-jenkins-purple-cube'
+    }
+    parameters {
+        choice (choices: ['NON-PORD', 'PRODUCTION'], description: 'Select environment ', name: 'ENVIRONMENT')
+        string (defaultValue: '16.2', description: 'Enter Postgresql DB Version Ex: 16.2 ', name: 'POSTGRES_LATEST_VERSION', trim: true)
+        string (defaultValue: '10.128.0.5', description: 'Enter Server Hostname ', name: 'HOSTAME_LIST', trim: true)
+    }
+    stages {
+        stage('Clean Workspace') { 
+            steps { 
+                cleanWs()
+            }
+        }
+        stage('SCM Checkout') { 
+            steps { 
+                git credentialsId: "${env.GIT_CRED}",
+                    url: "${env.GIT_REPO}",
+                    branch: "${env.GIT_BRANCH}"
+            }
+        }
+        stage('Invoke Ansible Playbook') { 
+            steps {
+                ansiblePlaybook (
+                    playbook: 'operations/install-postgresql.yml',
+                    inventory: "${params.HOSTAME_LIST},",
+                    extras: "-e POSTGRES_LATEST_VERSION=${params.POSTGRES_LATEST_VERSION}"
+                )
+            }
+        }
+    }
+}
+    
